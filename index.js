@@ -9,7 +9,7 @@ const app = express();
 const port = 3000;
 
 app.set('view engine', 'ejs');
-app.set('views', 'N:/Uravu Bottling');
+app.set('views', 'N:/Uravu Bottling/views');
 
 app.use(bodyParser.urlencoded({extended: true}));
 
