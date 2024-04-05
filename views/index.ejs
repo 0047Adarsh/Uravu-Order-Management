@@ -196,9 +196,13 @@
     </div>
 
     <div class="table-wrapper">
-        <h2>Total Volume: <%= f_volume %></h2>
-        <h2>Present Volume: <%= f_volume * 0.85 %></h2>
-        <h2>Rejected Volume: <%= f_volume * 0.15 %></h2>
+        <% let total = 0; %>
+        <% all_orders.forEach(data=>{%>
+            <% let volume = data.svolume * data.quantity; %>
+            <% total += volume %>
+        <%}) %>  
+        <h2>Total Volume Produced: <%= f_volume %></h2>
+        <h2>Deficit Volume: <%= f_volume - total %></h2>
         <table id="ordersTable">
             <thead>
                 <tr>
@@ -219,6 +223,7 @@
                         <td><%= order.svolume %></td>
                         <td><%= order.quantity %></td>
                         <td><%= totalVolume %></td>
+                        <% total += totalVolume %>
                         <td>
                             <button class="edit-btn" onclick="editOrder('<%= order.Slno %>', '<%= order.name %>', '<%= order.svolume %>', '<%= order.quantity %>')">Edit</button>
                         </td>
