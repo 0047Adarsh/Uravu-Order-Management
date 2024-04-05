@@ -19,7 +19,7 @@
 
     app.post('/volume', (req,res)=>{
         let vdata = req.body.volume;
-        volume += parseInt(vdata)   ;
+        volume += parseFloat(vdata)   ;
         res.redirect('/');
     });
 
@@ -38,8 +38,8 @@
         const index = parseInt(data.uSlno) - 1;
         let Slno = data.uSlno;
         let name= data.uname;
-        let svolume = parseInt(data.usvolume);
-        let quantity = parseInt(data.uquantity);
+        let svolume = parseFloat(data.usvolume);
+        let quantity = parseFloat(data.uquantity);
 
         if (index >= 0 && index < orders.length) {
             orders[index] = {Slno, name, svolume, quantity};

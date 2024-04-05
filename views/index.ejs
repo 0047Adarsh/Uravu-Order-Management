@@ -173,8 +173,8 @@
                 <input type="number" name="Slno" value="<%= number %>" readonly>
                 <input type="text" placeholder="Customer Name" name="name" >
                 <select name="svolume">
-                    <option selected value="500">500ml</option>
-                    <option value="750">750ml</option>
+                    <option selected value="0.5">500ml</option>
+                    <option value="0.75">750ml</option>
                 </select>
                 <input type="number" placeholder="Quantity" name="quantity">
                 <input type="button" value="Place Order" onclick="placeOrder()">
@@ -186,8 +186,8 @@
                 <input type="number" name="uSlno" readonly>
                 <input type="text" placeholder="Customer Name" name="uname" >
                 <select name="usvolume">
-                    <option selected value="500">500ml</option>
-                    <option value="750">750ml</option>
+                    <option selected value="0.5">500ml</option>
+                    <option value="0.75">750ml</option>
                 </select>
                 <input type="number" placeholder="Quantity" name="uquantity">
                 <input type="submit" value="Update Order">
@@ -202,7 +202,7 @@
             <% total += volume %>
         <%}) %>  
         <h2>Total Volume Produced: <%= f_volume %></h2>
-        <h2>Deficit Volume: <%= f_volume - total %></h2>
+        <h2>Remaining Volume: <%= f_volume - total %></h2>
         <table id="ordersTable">
             <thead>
                 <tr>
@@ -275,7 +275,7 @@
             let rejectedVolume = p_volume * 0.15;
             
             rows.forEach(row => {
-                const orderVolume = parseInt(row.cells[2].innerText) * parseInt(row.cells[3].innerText);
+                const orderVolume = parseFloat(row.cells[2].innerText) * parseFloat(row.cells[3].innerText);
             
                     if (orderVolume <= presentVolume) {
                         row.style.backgroundColor = 'green';
@@ -299,7 +299,7 @@
             let rejectedVolume = p_volume * 0.15;
             
             rows.forEach(row => {
-                const orderVolume = parseInt(row.cells[2].innerText) * parseInt(row.cells[3].innerText);
+                const orderVolume = parseFloat(row.cells[2].innerText) * parseFloat(row.cells[3].innerText);
             
                     if (orderVolume <= presentVolume) {
                         row.style.backgroundColor = 'green';
