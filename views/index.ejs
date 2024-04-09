@@ -11,37 +11,34 @@
             padding: 0;
             box-sizing: border-box;
         }
-
-        body {
+        body{
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f5f5f5;
             height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            /* justify-content: center; */
+            align-items: center; 
+            flex-direction: column;
         }
-
         .container {
             background-color: #fff;
-            width: 40%;
+            width: 25%;
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-
         .container h1 {
             font-size: 24px;
             margin-bottom: 20px;
             text-align: center;
             color: #007bff;
         }
-
         .form-container {
             margin-bottom: 20px;
         }
-
         input[type="text"],
         input[type="number"],
+        input[type="date"],
         select {
             width: 100%;
             padding: 10px;
@@ -51,7 +48,6 @@
             font-size: 16px;
             background-color: #f9f9f9;
         }
-
         input[type="submit"], input[type="button"] {
             width: 100%;
             padding: 12px;
@@ -63,28 +59,23 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-
         input[type="submit"]:hover, input[type="button"]:hover {
             background-color: #0056b3;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
         th, td {
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
-
         th {
             background-color: #f2f2f2;
         }
-
-        .edit-btn {
+        .edit-btn, .split-btn {
             background-color: #28a745;
             color: #fff;
             border: none;
@@ -93,11 +84,9 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-
         .edit-btn:hover {
             background-color: #218838;
         }
-
         .update-form {
             display: none;
             position: fixed;
@@ -113,12 +102,10 @@
             opacity: 0;
             transition: opacity 0.3s ease, transform 0.3s ease;
         }
-
         .update-form.show {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
         }
-
         .table-wrapper {
             background-color: #fff;
             width: 80%;
@@ -127,62 +114,173 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
         }
-
         .table-wrapper h2 {
             font-size: 20px;
             margin-bottom: 10px;
             text-align: center;
             color: #333;
         }
-
         .table-wrapper table {
             width: 100%;
             border-collapse: collapse;
         }
-
         .table-wrapper th, .table-wrapper td {
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
-
         .table-wrapper th {
             background-color: #f2f2f2;
         }
-
         .dragging {
             opacity: 0.5;
+        }
+        .new-btn-container{
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        .new-btn{
+            background-color: #fff;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .container{
+            display: none;
+            position: fixed;
+            top: 50%;
+            left:50%
+        }
+        .container.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .close-form {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            padding: 8px 12px;
+            font-size: 16px;
+            background-color: #dc3545;
+            color: #fff; 
+            font-weight: bold;
+            border-radius: 50%; 
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .close-form:hover {
+            background-color: #c82333;
+        }
+
+        .split-form {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            width: 60%;
+            max-width: 400px;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .split-form.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .split-form form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .split-form form .form-group {
+            flex: 0 0 48%; 
+            margin-bottom: 10px;
+        }
+
+        .split-form form .form-group input,
+        .split-form form .form-group select {
+            width: 100%;
+        }
+
+        .split-form form input[type="submit"] {
+            width: 100%;
+        }
+
+        .close-sform {
+            position: absolute;
+            top: 10px;
+            right: 5px;
+            padding: 8px 12px;
+            font-size: 16px;
+            background-color: #dc3545;
+            color: #fff; 
+            font-weight: bold;
+            border-radius: 50%; 
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .close-sform:hover {
+            background-color: #c82333;
         }
     </style>
 </head>
 <body>
+    <div id="f_volume_data" data-volume='<%= JSON.stringify(f_volume) %>'></div>
+    <div class="new-btn-container">
+        <button class="new-btn" onclick="openform()">Add New Order</button>
+    </div>
     <div class="container">
-        <h1>Order Management System</h1>
-        <div class="form-container">
-            <form method="POST" action="/volume">
-                <input type="text" placeholder="Volume" name="volume">
-                <input type="submit" value="Update Volume">
-            </form>
-        </div>
-        <div class="form-container">
-            <form method="POST" action="/order" id="orderForm">
-                <% let number = 1 %>
-                <% all_orders.forEach(function(order) { %>
-                    <% number += 1 %>
-                <% }); %>
-                <input type="number" name="Slno" value="<%= number %>" readonly>
-                <input type="text" placeholder="Customer Name" name="name" >
-                <select name="svolume">
-                    <option selected value="0.5">500ml</option>
-                    <option value="0.75">750ml</option>
-                </select>
-                <input type="number" placeholder="Quantity" name="quantity">
-                <input type="button" value="Place Order" onclick="placeOrder()">
-            </form>
-        </div>
-
+        <div id='new-form'>
+            <h1>Order Management System</h1>
+            <button class="close-form" onclick="closeform()">X</button>
+            <div class="form-container">
+                <form method="POST" action="/volume">
+                    <input type="text" placeholder="Volume" name="volume">
+                    <input type="date" name="productiondate">
+                    <input type="submit" value="Update Volume">
+                </form>
+            </div>
+            <div class="form-container">
+                <form method="POST" action="/order" id="orderForm">
+                    <% let sequence = 1; %>
+                    <% let number = 1; %>
+                    <% let existingSlNos = []; %>
+                    <% all_orders.forEach(data=>{ %>
+                        <% existingSlNos.push(parseInt(data.Slno)); %>
+                        <% sequence += 1 %>
+                    <% });%>
+                    <% existingSlNos.forEach(slno=>{%>
+                        <% if(parseInt(slno) === number){ %>
+                            <% number+=1 %> 
+                        <%} %>
+                    <%}) %>
+                    <input type="number" name="Serial" value="<%= sequence %>" readonly hidden>
+                    <input type="number" name="Slno" value="<%= number %>" readonly>
+                    <input type="text" placeholder="Customer Name" name="name" >
+                    <select name="svolume">
+                        <option selected value="0.5">500ml</option>
+                        <option value="0.75">750ml</option>
+                    </select>
+                    <input type="number" placeholder="Quantity" name="quantity">
+                    <input type="date" name="deliverydate">
+                    <input type="button" value="Place Order" onclick="placeOrder()">
+                </form>
+            </div>
+        </div>    
+    </div>
         <div class="update-form" id="updateform">
             <form method="POST" action="/update_order">
+                <input type="number" name="uSerial" readonly hidden>
                 <input type="number" name="uSlno" readonly>
                 <input type="text" placeholder="Customer Name" name="uname" >
                 <select name="usvolume">
@@ -190,47 +288,88 @@
                     <option value="0.75">750ml</option>
                 </select>
                 <input type="number" placeholder="Quantity" name="uquantity">
+                <input type="date" name="udeliverydate">
                 <input type="submit" value="Update Order">
             </form>
         </div>
-    </div>
-
-    <div class="table-wrapper">
-        <% let total = 0; %>
-        <% all_orders.forEach(data=>{%>
-            <% let volume = data.svolume * data.quantity; %>
-            <% total += volume %>
-        <%}) %>  
-        <h2>Total Volume Produced: <%= f_volume %></h2>
-        <h2>Remaining Volume: <%= f_volume - total %></h2>
-        <table id="ordersTable">
-            <thead>
-                <tr>
-                    <th>Slno.</th>
-                    <th>Name</th>
-                    <th>Volume</th>
-                    <th>Quantity</th>
-                    <th>Total Quantity</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% all_orders.forEach((order, index) => { %>
-                    <% let totalVolume = order.svolume * order.quantity; %>
+        
+    <% let total = 0; %>
+    <% let date = 0; %>
+    <% f_volume.forEach(productiondata=>{%>
+        <% const date = productiondata.productiondate %>
+        <div class="table-wrapper"> 
+            <h2>Production Date: <%= date %></h2> 
+            <h2>Total Volume Produced: <%= parseFloat(productiondata.volume); %></h2>
+            <% let totalOrderedVolume = 0; %>
+            <table id="ordersTable">
+                <thead> 
                     <tr>
-                        <td><%= order.Slno %></td>
-                        <td><%= order.name %></td>
-                        <td><%= order.svolume %></td>
-                        <td><%= order.quantity %></td>
-                        <td><%= totalVolume %></td>
-                        <% total += totalVolume %>
-                        <td>
-                            <button class="edit-btn" onclick="editOrder('<%= order.Slno %>', '<%= order.name %>', '<%= order.svolume %>', '<%= order.quantity %>')">Edit</button>
-                        </td>
+                        <th>Slno.</th>
+                        <th>Name</th>
+                        <th>Volume</th>
+                        <th>Quantity</th>
+                        <th>Total Quantity</th>
+                        <th>Delivery Date</th>
+                        <th>Action</th>
+                        <th>Split Order</th>
                     </tr>
-                <% }); %>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <% all_orders.forEach((order, index) => { %>
+                        <% if(order.deliverydate === date){%>
+                            <% let totalVolume = order.svolume * order.quantity; %>
+                            <% totalOrderedVolume += totalVolume; %>
+                            <tr>
+                                <td><%= order.Slno %></td>
+                                <td><%= order.name %></td>
+                                <td><%= order.svolume %></td>
+                                <td><%= order.quantity %></td>
+                                <td><%= totalVolume %></td>
+                                <% total += totalVolume %>
+                                <td><%= order.deliverydate %></td>
+                                <td>
+                                    <button class="edit-btn" onclick="editOrder('<%= order.Serial %>','<%= order.Slno %>', '<%= order.name %>', '<%= order.svolume %>', '<%= order.quantity %>', '<%= order.deliverydate %>')">Edit</button>
+                                </td>
+                                <td>
+                                    <button class="split-btn" onclick="splitOrder('<%= order.Serial %>','<%= order.Slno %>', '<%= order.name %>', '<%= order.svolume %>', '<%= order.quantity %>', '<%= order.deliverydate %>')">Split</button>
+                                </td>
+                            </tr>
+                        <% } %>
+                    <% }); %>
+                </tbody>
+            </table>
+            <% const remainingVolume = parseFloat(productiondata.volume) - totalOrderedVolume; %>
+            <h2>Remaining Volume: <%= remainingVolume %></h2>
+        </div>
+    <% }) %>
+
+    <div class="split-form" id="splitform">
+        <form method="POST" action="/split_order">
+            <div class="form-group"> 
+                <button class="close-sform" onclick="closesform()">X</button>
+                <input type="number" name="sSerial" readonly hidden>
+                <input type="number" name="sSlno" readonly>
+                <input type="text" placeholder="Customer Name" name="sname" readonly>
+                <select name="ssvolume">
+                    <option selected value="0.5">500ml</option>
+                    <option value="0.75">750ml</option>
+                </select>
+                <input type="number" placeholder="Quantity" name="squantity">
+                <input type="date" name="sdeliverydate">
+            </div>
+            <div class="form-group">
+                <input type="number" name="ssSerial" readonly hidden>    
+                <input type="number" name="ssSlno" readonly>
+                <input type="text" placeholder="Customer Name" name="ssname" readonly>
+                <select name="ssvolume">
+                    <option selected value="0.5">500ml</option>
+                    <option value="0.75">750ml</option>
+                </select>
+                <input type="number" placeholder="Quantity" name="ssquantity"  required>
+                <input type="date" name="ssdeliverydate" required>
+            </div>
+            <input type="submit" value="Split Order">
+        </form>
     </div>
 
     <script>
@@ -239,90 +378,125 @@
             let draggedRow = null;
             rows.forEach(row => {
                 row.draggable = true;
-
                 row.addEventListener('dragstart', function() {
                     draggedRow = this;
                     this.classList.add('dragging');
                 });
-
                 row.addEventListener('dragend', function() {
                     this.classList.remove('dragging');
                     draggedRow = null;
                 });
-
                 row.addEventListener('dragover', function(event) {
                     event.preventDefault();
                 });
-
                 row.addEventListener('drop', function() {
                     if (draggedRow && draggedRow !== this) {
                         const draggedIndex = Array.from(rows).indexOf(draggedRow);
                         const targetIndex = Array.from(rows).indexOf(this);
-
                         const tbody = this.parentNode;
                         tbody.insertBefore(draggedRow, targetIndex > draggedIndex ? this.nextSibling : this);
-
                         updatecolors();
                     }
                 });
             });
+        });   
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            const f_volume_data_element = document.getElementById('f_volume_data');
+            const f_volume_data_string = f_volume_data_element.getAttribute('data-volume');
+            const f_volume_data = JSON.parse(f_volume_data_string);
+            f_volume_data.forEach(all_volume => {
+                let date = all_volume.productiondate;
+                let presentVolume = parseFloat(all_volume.volume) * 0.85;
+                let bufferVolume = parseFloat(all_volume.volume) * 0.15;
+
+                const rows = document.querySelectorAll('#ordersTable tbody tr');
+                rows.forEach(row => {
+                let deliveryDate = row.cells[5].innerText;
+                let orderVolume = parseFloat(row.cells[4].innerText);
+                if (date == deliveryDate) {
+                    if (orderVolume <= presentVolume) {
+                        row.style.backgroundColor = 'green';
+                        presentVolume -= orderVolume;
+                    } else if (orderVolume <= (presentVolume + bufferVolume)) {
+                        row.style.backgroundColor = 'yellow';
+                        bufferVolume -= (orderVolume - presentVolume);
+                        presentVolume = 0;
+                    } else {
+                        row.style.backgroundColor = 'red';
+                        presentVolume = 0;
+                        bufferVolume = 0;
+                    }
+                }
+            });
+            });
         });
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const p_volume = '<%- f_volume%>';
-            const rows = document.querySelectorAll('#ordersTable tbody tr');
-            let presentVolume = p_volume * 0.85;
-            let rejectedVolume = p_volume * 0.15;
-            
-            rows.forEach(row => {
-                const orderVolume = parseFloat(row.cells[2].innerText) * parseFloat(row.cells[3].innerText);
-            
-                    if (orderVolume <= presentVolume) {
-                        row.style.backgroundColor = 'green';
-                        presentVolume -= orderVolume;
-                    } else if (orderVolume <= (presentVolume + rejectedVolume)) {
-                        row.style.backgroundColor = 'yellow';
-                        rejectedVolume -= (orderVolume - presentVolume  );
-                        presentVolume = 0;
-                    } else {
-                        row.style.backgroundColor = 'red';
-                        presentVolume = 0;
-                        rejectedVolume = 0;
-                    }
-                });
-            });
-
         function updatecolors(){
-            const p_volume = '<%- f_volume%>';
-            const rows = document.querySelectorAll('#ordersTable tbody tr');
-            let presentVolume = p_volume * 0.85;
-            let rejectedVolume = p_volume * 0.15;
-            
-            rows.forEach(row => {
-                const orderVolume = parseFloat(row.cells[2].innerText) * parseFloat(row.cells[3].innerText);
-            
+            const f_volume_data_element = document.getElementById('f_volume_data');
+            const f_volume_data_string = f_volume_data_element.getAttribute('data-volume');
+            const f_volume_data = JSON.parse(f_volume_data_string);
+            f_volume_data.forEach(all_volume => {
+                let date = all_volume.productiondate;
+                let presentVolume = parseFloat(all_volume.volume) * 0.85;
+                let bufferVolume = parseFloat(all_volume.volume) * 0.15;
+
+                const rows = document.querySelectorAll('#ordersTable tbody tr');
+                rows.forEach(row => {
+                let deliveryDate = row.cells[5].innerText;
+                let orderVolume = parseFloat(row.cells[4].innerText);
+                if (date == deliveryDate) {
                     if (orderVolume <= presentVolume) {
                         row.style.backgroundColor = 'green';
                         presentVolume -= orderVolume;
-                    } else if (orderVolume <= (presentVolume + rejectedVolume)) {
+                    } else if (orderVolume <= (presentVolume + bufferVolume)) {
                         row.style.backgroundColor = 'yellow';
-                        rejectedVolume -= (orderVolume - presentVolume  );
+                        bufferVolume -= (orderVolume - presentVolume);
                         presentVolume = 0;
                     } else {
                         row.style.backgroundColor = 'red';
                         presentVolume = 0;
-                        rejectedVolume = 0;
+                        bufferVolume = 0;
                     }
-                });
-        }
+                }
+            });
+            });
+                };
 
-        function editOrder(Slno, name, svolume, quantity) {
+        function editOrder(Serial, Slno, name, svolume, quantity, date) {
+            document.getElementsByName('uSerial')[0].value = Serial;
             document.getElementsByName('uSlno')[0].value = Slno;
             document.getElementsByName('uname')[0].value = name;
             document.getElementsByName('usvolume')[0].value = svolume;
             document.getElementsByName('uquantity')[0].value = quantity;
+            document.getElementsByName('udeliverydate')[0].value = date;
             document.getElementById('updateform').style.display = 'block';
             document.getElementById('updateform').classList.add('show');
+        }
+
+        function splitOrder(Serial, Slno, name, svolume, quantity, date){
+            const rows = document.querySelectorAll('#ordersTable tbody tr');
+            let last_serial = 0;
+            rows.forEach(row => {
+                const serial = parseInt(row.cells[0].innerText);
+                if (serial > last_serial) {
+                    last_serial = serial;
+                }
+            });
+            last_serial++;
+
+            document.getElementsByName('sSerial')[0].value = Serial;
+            document.getElementsByName('sSlno')[0].value = Slno;
+            document.getElementsByName('sname')[0].value = name;
+            document.getElementsByName('svolume')[0].value = svolume;
+            document.getElementsByName('squantity')[0].value = quantity;
+            document.getElementsByName('sdeliverydate')[0].value = date;
+            document.getElementsByName('ssSerial')[0].value = last_serial;
+            document.getElementsByName('ssSlno')[0].value = Slno;
+            document.getElementsByName('ssname')[0].value = name;
+            document.getElementsByName('ssvolume')[0].value = svolume;
+            document.getElementById('splitform').style.display = 'block';
+            document.getElementById('splitform').classList.add('show');
         }
 
         function placeOrder() {
@@ -330,6 +504,20 @@
             document.getElementById('orderForm').submit();
         }
 
+        function openform(){
+            document.querySelector('.container').style.display = 'block';
+            document.querySelector('.container').classList.add('show');
+        }
+
+        function  closeform(){
+            document.querySelector('.container').style.display = 'none';
+            document.querySelector('.container').classList.remove('show');
+        }
+
+        function  closesform(){
+            document.querySelector('.split-form').style.display = 'none';
+            document.querySelector('.split-form').classList.remove('show');
+        }
     </script>
 </body>
 </html>
