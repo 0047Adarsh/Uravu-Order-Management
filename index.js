@@ -12,14 +12,14 @@ const port = 3000;
 app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
 
-const db = new pg.Client({
-    user: "postgres",
-    password: "Dominoz@data123",
-    database: "postgres",
-    host: "127.0.0.1",
-    port:  5432,
-}); 
-db.connect();
+// const db = new pg.Client({
+//     user: "postgres",
+//     password: "Dominoz@data123",
+//     database: "postgres",
+//     host: "127.0.0.1",
+//     port:  5432,
+// }); 
+// db.connect();
 
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -35,7 +35,7 @@ app.post('/order', async(req,res)=>{
     let data = req.body;
     orders.push(data);
     let total_quantity = data.svolume * data.quantity;
-    db.query("INSERT INTO order_management (sl, customer_name, volume, quantity, total_quantity, delivery_date) VALUES ($1, $2, $3, $4, $5, $6)", [data.Slno, data.name, data.svolume, data.quantity, total_quantity, data.deliverydate]);
+    //db.query("INSERT INTO order_management (sl, customer_name, volume, quantity, total_quantity, delivery_date) VALUES ($1, $2, $3, $4, $5, $6)", [data.Slno, data.name, data.svolume, data.quantity, total_quantity, data.deliverydate]);
     res.redirect('/');
 });
 
