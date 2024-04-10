@@ -41,7 +41,7 @@ app.post('/order', async(req,res)=>{
 
 app.get('/', async(req,res)=>{
     //const all_orders = await db.query("SELECT * FROM order_management");
-    console.log(all_orders.rows)
+    //console.log(all_orders.rows)
     res.render('index.ejs', {all_orders: orders, f_volume: volume});
 });
 
