@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import ejs from "ejs";
+import pg from "pg";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -10,6 +11,15 @@ const port = 3000;
 
 app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
+
+const db = new pg.Client({
+    user: "postgres",
+    password: "Dominoz@data123",
+    database: "postgres",
+    host: "localhost",
+    port:  5432,
+}); 
+db.connect();
 
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -21,13 +31,17 @@ app.post('/volume', (req,res)=>{
     res.redirect('/');
 });
 
-app.post('/order', (req,res)=>{
+app.post('/order', async(req,res)=>{
     let data = req.body;
     orders.push(data);
+    let total_quantity = data.svolume * data.quantity;
+    db.query("INSERT INTO order_management (sl, customer_name, volume, quantity, total_quantity, delivery_date) VALUES ($1, $2, $3, $4, $5, $6)", [data.Slno, data.name, data.svolume, data.quantity, total_quantity, data.deliverydate]);
     res.redirect('/');
 });
 
-app.get('/', (req,res)=>{
+app.get('/', async(req,res)=>{
+    const all_orders = await db.query("SELECT * FROM order_management");
+    console.log(all_orders.rows)
     res.render('index.ejs', {all_orders: orders, f_volume: volume});
 });
 
