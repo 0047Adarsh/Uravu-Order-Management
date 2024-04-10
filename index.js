@@ -24,10 +24,10 @@ app.set('views', join(__dirname, 'views'));
 app.use(bodyParser.urlencoded({extended: true}));
 
 let orders = [];
-let volume = [];
+let volumes = [];
 
 app.post('/volume', (req,res)=>{
-    volume.push((req.body));
+    volumes.push((req.body));
     res.redirect('/');
 });
 
@@ -42,7 +42,7 @@ app.post('/order', async(req,res)=>{
 app.get('/', async(req,res)=>{
     //const all_orders = await db.query("SELECT * FROM order_management");
     //console.log(all_orders.rows)
-    res.render('index.ejs', {all_orders: orders, f_volume: volume});
+    res.render('index.ejs', {all_orders: orders, f_volume: volumes});
 });
 
 app.post('/update_order', (req, res) => {
@@ -87,6 +87,20 @@ app.post('/split_order', (req, res) => {
         res.status(404).send('Order not found');    
     }
     orders.push({"Serial":parseInt(serial),"Slno":parseInt(slno), "name":Name,"svolume":Svolume,"quantity":Quantity,"deliverydate":Deliverydate});
+});
+
+app.post('/update_volume', (req,res)=>{
+    let udata = req.body;
+    const index = req.body.uvSl - 1;
+    let proId = req.body.uvSl;
+    let volume = req.body.uvvolume;
+    let productiondate = req.body.uvproductiondate;
+    if (index >= 0 && index < volumes.length) {
+        volumes[index] = {proId, volume, productiondate};
+        res.redirect("/");
+    } else {
+        res.status(404).send('Volume not found');    
+    }
 });
 
 app.listen(`${port}`, ()=>{

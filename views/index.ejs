@@ -232,6 +232,25 @@
         .close-sform:hover {
             background-color: #c82333;
         }
+        .update-volume{
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            width: 60%;
+            max-width: 400px;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .update-volume.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
     </style>
 </head>
 <body>
@@ -245,6 +264,11 @@
             <button class="close-form" onclick="closeform()">X</button>
             <div class="form-container">
                 <form method="POST" action="/volume">
+                    <% let prod_sequence = 1; %>
+                    <% f_volume.forEach(volume=>{ %>
+                        <% prod_sequence += 1 %>
+                    <% });%>
+                    <input type="number" name="proId" value="<%= prod_sequence %>" hidden>
                     <input type="text" placeholder="Volume" name="volume">
                     <input type="date" name="productiondate">
                     <input type="submit" value="Update Volume">
@@ -292,14 +316,24 @@
                 <input type="submit" value="Update Order">
             </form>
         </div>
+        <div class="update-volume" id="updatevolume">
+            <form method="POST" action="/update_volume">
+                <input type="number" name="uvSl" readonly hidden>
+                <input type="number" placeholder="Volume" name="uvvolume">
+                <input type="date" name="uvproductiondate">
+                <input type="submit" value="Update Production Data">
+            </form>
+        </div>
         
     <% let total = 0; %>
     <% let date = 0; %>
     <% f_volume.forEach(productiondata=>{%>
         <% const date = productiondata.productiondate %>
-        <div class="table-wrapper"> 
+        <div class="table-wrapper">
+            <h6 hidden><%= productiondata.proId %></h6> 
             <h2>Production Date: <%= date %></h2> 
             <h2>Total Volume Produced: <%= parseFloat(productiondata.volume); %></h2>
+            <button class="vol-edit-btn" onclick="editVolume('<%= productiondata.proId %>','<%= parseFloat(productiondata.volume); %>','<%= date %>')">Edit Production Volume</button>
             <% let totalOrderedVolume = 0; %>
             <table id="ordersTable">
                 <thead> 
@@ -473,6 +507,15 @@
             document.getElementById('updateform').style.display = 'block';
             document.getElementById('updateform').classList.add('show');
         }
+
+        function editVolume(Slno, volume, date) {
+            document.getElementsByName('uvSl')[0].value = Slno;
+            document.getElementsByName('uvvolume')[0].value = volume;
+            document.getElementsByName('uvproductiondate')[0].value = date;
+            document.getElementById('updatevolume').style.display = 'block';
+            document.getElementById('updatevolume').classList.add('show');
+        }
+
 
         function splitOrder(Serial, Slno, name, svolume, quantity, date){
             const rows = document.querySelectorAll('#ordersTable tbody tr');
