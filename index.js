@@ -12,14 +12,9 @@ const port = 3000;
 app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
 
-// const db = new pg.Client({
-//     user: "postgres",
-//     password: "Dominoz@data123",
-//     database: "postgres",
-//     host: "127.0.0.1",
-//     port:  5432,
-// }); 
-// db.connect();
+var conString = "postgres://xnqqtxls:AyyL6iD3RUYkb53cYXVaMwMKDiR60uVf@floppy.db.elephantsql.com/xnqqtxls"
+var client = new pg.Client(conString);
+
 
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -39,9 +34,16 @@ app.post('/order', async(req,res)=>{
     res.redirect('/');
 });
 
+client.connect()
 app.get('/', async(req,res)=>{
     //const all_orders = await db.query("SELECT * FROM order_management");
     //console.log(all_orders.rows)
+    try {
+        const results = await client.query('SELECT * FROM orders');
+        console.log(results.rows);
+    } catch (err) {
+        console.log(err);
+    }
     res.render('index.ejs', {all_orders: orders, f_volume: volumes});
 });
 
