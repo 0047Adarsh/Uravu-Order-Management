@@ -329,7 +329,7 @@
         %>
 
         <div class="table-wrapper">
-            <h6><%= productiondata.slno %></h6> 
+            <h6 hidden><%= productiondata.slno %></h6> 
             <h2>Production Date: <%= prod_date %></h2> 
             <h2>Total Volume Produced: <%= parseFloat(productiondata.volume); %></h2>
             <button class="vol-edit-btn" onclick="editVolume('<%= productiondata.slno %>','<%= parseFloat(productiondata.volume); %>','<%= prod_date %>')">Edit Production Volume</button>
@@ -344,6 +344,7 @@
                         <th>Quantity</th>
                         <th>Total Quantity</th>
                         <th>Delivery Date</th>
+                        <th>Fulfilled By</th>
                         <th>Action</th>
                         <th>Split Order</th>
                     </tr>
@@ -369,6 +370,7 @@
                                 <td><%= order.total_quantity %></td>
                                 <% total += total %>
                                 <td><%= ord_date %></td>
+                                <td>9AM</td>
                                 <td>
                                     <button class="edit-btn" onclick="editOrder('<%= order.sequence %>','<%= order.slno %>', '<%= order.customer_name %>', '<%= order.volume %>', '<%= order.quantity %>', '<%= ord_date %>')">Edit</button>
                                 </td>
@@ -437,6 +439,7 @@
                         const targetIndex = Array.from(rows).indexOf(this);
                         const tbody = this.parentNode;
                         tbody.insertBefore(draggedRow, targetIndex > draggedIndex ? this.nextSibling : this);
+                        calculate_time();
                         updatecolors();
                     }
                 });
@@ -478,6 +481,97 @@
             });
         });
 
+        window.addEventListener('DOMContentLoaded', () => {
+                const f_volume_data_element = document.getElementById('f_volume_data');
+                const f_volume_data_string = f_volume_data_element.getAttribute('data-volume');
+                const f_volume_data = JSON.parse(f_volume_data_string);
+                let startTime = '10:00 AM';
+                let prevProductionDate = null;
+
+                f_volume_data.forEach(all_volume => {
+                    const rows = document.querySelectorAll('#ordersTable tbody tr');
+                    rows.forEach(row => {
+                        let productionDate = row.cells[6].innerText;
+                        let quantity = parseInt(row.cells[4].innerText);
+                        if (productionDate !== prevProductionDate) {
+                            startTime = '10:00 AM';
+                            prevProductionDate = productionDate;
+                        }
+
+                        let time_taken = (quantity * 0.15) / 60;
+                        let endTime = addTime(startTime, time_taken);
+                        row.cells[7].innerText = endTime;
+                        startTime = addTime(endTime, 0);
+                    });
+                });
+            });
+
+            function addTime(startTime, hours) {
+                let [hoursStr, minutesStr, ampm] = startTime.split(/:|\s/);
+                let startHours = parseInt(hoursStr);
+                let startMinutes = parseInt(minutesStr);
+                let totalMinutes = startHours * 60 + startMinutes + hours * 60;
+                let newHours = Math.floor(totalMinutes / 60);
+                let newMinutes = totalMinutes % 60;
+                let newAmPm = ampm;
+                
+                if (newHours >= 12) {
+                    newAmPm = 'PM';
+                }
+                
+                if (newHours > 12) {
+                    newHours -= 12;
+                }
+
+                return `${newHours}:${newMinutes < 10 ? '0' + newMinutes : newMinutes} ${newAmPm}`;
+            }
+
+        function calculate_time()
+        {
+        const f_volume_data_element = document.getElementById('f_volume_data');
+        const f_volume_data_string = f_volume_data_element.getAttribute('data-volume');
+        const f_volume_data = JSON.parse(f_volume_data_string);
+        let startTime = '10:00 AM';
+        let prevProductionDate = null;
+
+        f_volume_data.forEach(all_volume => {
+            const rows = document.querySelectorAll('#ordersTable tbody tr');
+            rows.forEach(row => {
+                let productionDate = row.cells[6].innerText;
+                let quantity = parseInt(row.cells[4].innerText);
+                if (productionDate !== prevProductionDate) {
+                    startTime = '10:00 AM';
+                    prevProductionDate = productionDate;
+                }
+
+                let time_taken = (quantity * 0.15) / 60;
+                let endTime = addTime(startTime, time_taken);
+                row.cells[7].innerText = endTime;
+                startTime = addTime(endTime, 0);
+            });
+        });
+    };
+
+    function addTime(startTime, hours) {
+        let [hoursStr, minutesStr, ampm] = startTime.split(/:|\s/);
+        let startHours = parseInt(hoursStr);
+        let startMinutes = parseInt(minutesStr);
+        let totalMinutes = startHours * 60 + startMinutes + hours * 60;
+        let newHours = Math.floor(totalMinutes / 60);
+        let newMinutes = totalMinutes % 60;
+        let newAmPm = ampm;
+        
+        if (newHours >= 12) {
+            newAmPm = 'PM';
+        }
+        
+        if (newHours > 12) {
+            newHours -= 12;
+        }
+
+        return `${newHours}:${newMinutes < 10 ? '0' + newMinutes : newMinutes} ${newAmPm}`;
+    }
+
         function updatecolors(){
             const f_volume_data_element = document.getElementById('f_volume_data');
             const f_volume_data_string = f_volume_data_element.getAttribute('data-volume');
@@ -511,7 +605,7 @@
                 }
             });
             });
-                };
+            };
 
         function editOrder(Serial, Slno, name, svolume, quantity, date) {
             document.getElementsByName('uSerial')[0].value = Serial;
