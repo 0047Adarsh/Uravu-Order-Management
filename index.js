@@ -14,95 +14,62 @@ app.set('views', join(__dirname, 'views'));
 
 var conString = "postgres://xnqqtxls:AyyL6iD3RUYkb53cYXVaMwMKDiR60uVf@floppy.db.elephantsql.com/xnqqtxls"
 var client = new pg.Client(conString);
-
+client.connect()
 
 app.use(bodyParser.urlencoded({extended: true}));
 
-let orders = [];
-let volumes = [];
-
 app.post('/volume', (req,res)=>{
-    volumes.push((req.body));
+    let data = req.body;
+    try {
+        client.query('INSERT INTO volume (volume, production_date) VALUES ($1, $2)', [data.volume, data.productiondate]);
+    } catch (err) {
+        console.log(err);
+    }
     res.redirect('/');
 });
 
 app.post('/order', async(req,res)=>{
     let data = req.body;
-    orders.push(data);
     let total_quantity = data.svolume * data.quantity;
-    //db.query("INSERT INTO order_management (sl, customer_name, volume, quantity, total_quantity, delivery_date) VALUES ($1, $2, $3, $4, $5, $6)", [data.Slno, data.name, data.svolume, data.quantity, total_quantity, data.deliverydate]);
-    res.redirect('/');
-});
-
-client.connect()
-app.get('/', async(req,res)=>{
-    //const all_orders = await db.query("SELECT * FROM order_management");
-    //console.log(all_orders.rows)
     try {
-        const results = await client.query('SELECT * FROM orders');
-        console.log(results.rows);
+        client.query('INSERT INTO orders (slno, customer_name, volume, quantity, total_quantity, delivery_date) VALUES ($1, $2, $3, $4, $5, $6)', [data.Slno, data.name, data.svolume, data.quantity, total_quantity, data.deliverydate]);
     } catch (err) {
         console.log(err);
     }
-    res.render('index.ejs', {all_orders: orders, f_volume: volumes});
+    res.redirect('/');
+});
+
+
+app.get('/', async(req,res)=>{
+    try {
+        const results = await client.query('SELECT *, delivery_date FROM orders');
+        const vol_results = await client.query('SELECT * FROM volume');
+        res.render('index.ejs', {all_orders: results.rows, f_volume: vol_results.rows});
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 app.post('/update_order', (req, res) => {
     let data = req.body;
-    let index = parseInt(data.uSerial) - 1;
-    let Serial = parseInt(data.uSerial);
-    let Slno = data.uSlno;
-    let name= data.uname;
-    let svolume = parseFloat(data.usvolume);
-    let quantity = parseFloat(data.uquantity);
-    let deliverydate = data.udeliverydate;
-
-    if (index >= 0 && index < orders.length) {
-        orders[index] = {Serial,Slno, name, svolume, quantity,deliverydate};
-        res.redirect("/");
-    } else {
-        res.status(404).send('Order not found');
-    }
+    let total_quantity = data.usvolume * data.uquantity;
+    client.query('UPDATE orders SET slno = $1, customer_name = $2, volume = $3, quantity = $4, total_quantity = $5, delivery_date = $6 WHERE sequence = $7',[data.uSlno,data.uname,parseFloat(data.usvolume),parseFloat(data.uquantity),total_quantity,data.udeliverydate,data.uSerial]);
+    res.redirect("/");
 });
 
 app.post('/split_order', (req, res) => {
     let sdata = req.body;
-    const index = parseInt(sdata.sSerial) - 1;
-    let Serial = parseInt(sdata.sSerial);
-    let Slno = sdata.sSlno;
-    let name= sdata.sname;
-    let svolume = parseFloat(sdata.ssvolume);
-    let quantity = parseFloat(sdata.squantity);
-    let deliverydate = sdata.sdeliverydate;
-
-    let serial = parseInt(sdata.ssSerial);
-    let slno = sdata.ssSlno;
-    let Name= sdata.sname;
-    let Svolume = parseFloat(sdata.ssvolume);
-    let Quantity = parseFloat(sdata.ssquantity);
-    let Deliverydate = sdata.ssdeliverydate;
-
-    if (index >= 0 && index < orders.length) {
-        orders[index] = {Serial, Slno, name, svolume, quantity,deliverydate};
-        res.redirect("/");
-    } else {
-        res.status(404).send('Order not found');    
-    }
-    orders.push({"Serial":parseInt(serial),"Slno":parseInt(slno), "name":Name,"svolume":Svolume,"quantity":Quantity,"deliverydate":Deliverydate});
+    let total_quantity = parseFloat(sdata.ssvolume) * parseFloat(sdata.squantity);
+    client.query('UPDATE orders SET slno = $1, customer_name = $2, volume = $3, quantity = $4, total_quantity = $5, delivery_date = $6 WHERE sequence = $7',[sdata.sSlno,sdata.sname,parseFloat(sdata.ssvolume),parseFloat(sdata.squantity),total_quantity,sdata.sdeliverydate,sdata.sSerial]);
+    let stotal_quantity = parseFloat(sdata.ssvolume) * parseFloat(sdata.ssquantity);
+    client.query('INSERT INTO orders (slno, customer_name, volume, quantity, total_quantity, delivery_date) VALUES ($1, $2, $3, $4, $5, $6)', [sdata.ssSlno, sdata.sname,parseFloat(sdata.ssvolume),parseFloat(sdata.ssquantity), stotal_quantity, sdata.ssdeliverydate]);
+    res.redirect('/');
 });
 
 app.post('/update_volume', (req,res)=>{
     let udata = req.body;
-    const index = req.body.uvSl - 1;
-    let proId = req.body.uvSl;
-    let volume = req.body.uvvolume;
-    let productiondate = req.body.uvproductiondate;
-    if (index >= 0 && index < volumes.length) {
-        volumes[index] = {proId, volume, productiondate};
-        res.redirect("/");
-    } else {
-        res.status(404).send('Volume not found');    
-    }
+    client.query('UPDATE volume SET volume = $1, production_date = $2 WHERE slno = $3',[udata.uvvolume,udata.uvproductiondate,udata.uvSl]);
+    res.redirect("/");
 });
 
 app.listen(`${port}`, ()=>{

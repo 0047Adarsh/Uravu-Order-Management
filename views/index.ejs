@@ -264,11 +264,6 @@
             <button class="close-form" onclick="closeform()">X</button>
             <div class="form-container">
                 <form method="POST" action="/volume">
-                    <% let prod_sequence = 1; %>
-                    <% f_volume.forEach(volume=>{ %>
-                        <% prod_sequence += 1 %>
-                    <% });%>
-                    <input type="number" name="proId" value="<%= prod_sequence %>" hidden>
                     <input type="text" placeholder="Volume" name="volume">
                     <input type="date" name="productiondate">
                     <input type="submit" value="Update Volume">
@@ -276,19 +271,16 @@
             </div>
             <div class="form-container">
                 <form method="POST" action="/order" id="orderForm">
-                    <% let sequence = 1; %>
                     <% let number = 1; %>
                     <% let existingSlNos = []; %>
                     <% all_orders.forEach(data=>{ %>
-                        <% existingSlNos.push(parseInt(data.Slno)); %>
-                        <% sequence += 1 %>
+                        <% existingSlNos.push(parseInt(data.slno)); %>
                     <% });%>
-                    <% existingSlNos.forEach(slno=>{%>
-                        <% if(parseInt(slno) === number){ %>
+                    <% existingSlNos.forEach(Slno=>{%>
+                        <% if(parseInt(Slno) === number){ %>
                             <% number+=1 %> 
                         <%} %>
                     <%}) %>
-                    <input type="number" name="Serial" value="<%= sequence %>" readonly hidden>
                     <input type="number" name="Slno" value="<%= number %>" readonly>
                     <input type="text" placeholder="Customer Name" name="name" >
                     <select name="svolume">
@@ -318,7 +310,7 @@
         </div>
         <div class="update-volume" id="updatevolume">
             <form method="POST" action="/update_volume">
-                <input type="number" name="uvSl" readonly hidden>
+                <input type="number" name="uvSl" readonly>
                 <input type="number" placeholder="Volume" name="uvvolume">
                 <input type="date" name="uvproductiondate">
                 <input type="submit" value="Update Production Data">
@@ -328,16 +320,24 @@
     <% let total = 0; %>
     <% let date = 0; %>
     <% f_volume.forEach(productiondata=>{%>
-        <% const date = productiondata.productiondate %>
+        <%
+            const fullDate = new Date(productiondata.production_date);
+            const year = fullDate.getFullYear();
+            const month = (fullDate.getMonth() + 1).toString().padStart(2, '0');
+            const day = fullDate.getDate().toString().padStart(2, '0');
+            const prod_date = `${year}-${month}-${day}`;
+        %>
+
         <div class="table-wrapper">
-            <h6 hidden><%= productiondata.proId %></h6> 
-            <h2>Production Date: <%= date %></h2> 
+            <h6><%= productiondata.slno %></h6> 
+            <h2>Production Date: <%= prod_date %></h2> 
             <h2>Total Volume Produced: <%= parseFloat(productiondata.volume); %></h2>
-            <button class="vol-edit-btn" onclick="editVolume('<%= productiondata.proId %>','<%= parseFloat(productiondata.volume); %>','<%= date %>')">Edit Production Volume</button>
+            <button class="vol-edit-btn" onclick="editVolume('<%= productiondata.slno %>','<%= parseFloat(productiondata.volume); %>','<%= prod_date %>')">Edit Production Volume</button>
             <% let totalOrderedVolume = 0; %>
             <table id="ordersTable">
                 <thead> 
                     <tr>
+                        <th hidden>Sequence</th>
                         <th>Slno.</th>
                         <th>Name</th>
                         <th>Volume</th>
@@ -350,22 +350,30 @@
                 </thead>
                 <tbody>
                     <% all_orders.forEach((order, index) => { %>
-                        <% if(order.deliverydate === date){%>
-                            <% let totalVolume = order.svolume * order.quantity; %>
+                        <%
+                            const fullDate = new Date(order.delivery_date);
+                            const year = fullDate.getFullYear();
+                            const month = (fullDate.getMonth() + 1).toString().padStart(2, '0');
+                            const day = fullDate.getDate().toString().padStart(2, '0');
+                            const ord_date = `${year}-${month}-${day}`;
+                        %>
+                        <% if(prod_date === ord_date){%>
+                            <% let totalVolume = order.volume * order.quantity; %>
                             <% totalOrderedVolume += totalVolume; %>
                             <tr>
-                                <td><%= order.Slno %></td>
-                                <td><%= order.name %></td>
-                                <td><%= order.svolume %></td>
+                                <td hidden><%= order.sequence %></td>
+                                <td><%= order.slno %></td>
+                                <td><%= order.customer_name %></td>
+                                <td><%= order.volume %></td>
                                 <td><%= order.quantity %></td>
-                                <td><%= totalVolume %></td>
-                                <% total += totalVolume %>
-                                <td><%= order.deliverydate %></td>
+                                <td><%= order.total_quantity %></td>
+                                <% total += total %>
+                                <td><%= ord_date %></td>
                                 <td>
-                                    <button class="edit-btn" onclick="editOrder('<%= order.Serial %>','<%= order.Slno %>', '<%= order.name %>', '<%= order.svolume %>', '<%= order.quantity %>', '<%= order.deliverydate %>')">Edit</button>
+                                    <button class="edit-btn" onclick="editOrder('<%= order.sequence %>','<%= order.slno %>', '<%= order.customer_name %>', '<%= order.volume %>', '<%= order.quantity %>', '<%= ord_date %>')">Edit</button>
                                 </td>
                                 <td>
-                                    <button class="split-btn" onclick="splitOrder('<%= order.Serial %>','<%= order.Slno %>', '<%= order.name %>', '<%= order.svolume %>', '<%= order.quantity %>', '<%= order.deliverydate %>')">Split</button>
+                                    <button class="split-btn" onclick="splitOrder('<%= order.sequence %>','<%= order.slno %>', '<%= order.customer_name %>', '<%= order.volume %>', '<%= order.quantity %>', '<%= ord_date %>')">Split</button>
                                 </td>
                             </tr>
                         <% } %>
@@ -440,15 +448,19 @@
             const f_volume_data_string = f_volume_data_element.getAttribute('data-volume');
             const f_volume_data = JSON.parse(f_volume_data_string);
             f_volume_data.forEach(all_volume => {
-                let date = all_volume.productiondate;
+                const fullDate = new Date(all_volume.production_date);
+                const year = fullDate.getFullYear();
+                const month = (fullDate.getMonth() + 1).toString().padStart(2, '0');
+                const day = fullDate.getDate().toString().padStart(2, '0');
+                const new_date = `${year}-${month}-${day}`;
                 let presentVolume = parseFloat(all_volume.volume) * 0.85;
                 let bufferVolume = parseFloat(all_volume.volume) * 0.15;
 
                 const rows = document.querySelectorAll('#ordersTable tbody tr');
                 rows.forEach(row => {
-                let deliveryDate = row.cells[5].innerText;
-                let orderVolume = parseFloat(row.cells[4].innerText);
-                if (date == deliveryDate) {
+                let deliveryDate = row.cells[6].innerText;
+                let orderVolume = parseFloat(row.cells[5].innerText);
+                if (new_date == deliveryDate) {
                     if (orderVolume <= presentVolume) {
                         row.style.backgroundColor = 'green';
                         presentVolume -= orderVolume;
@@ -471,15 +483,19 @@
             const f_volume_data_string = f_volume_data_element.getAttribute('data-volume');
             const f_volume_data = JSON.parse(f_volume_data_string);
             f_volume_data.forEach(all_volume => {
-                let date = all_volume.productiondate;
+                const fullDate = new Date(all_volume.production_date);
+                const year = fullDate.getFullYear();
+                const month = (fullDate.getMonth() + 1).toString().padStart(2, '0');
+                const day = fullDate.getDate().toString().padStart(2, '0');
+                const new_date = `${year}-${month}-${day}`;
                 let presentVolume = parseFloat(all_volume.volume) * 0.85;
                 let bufferVolume = parseFloat(all_volume.volume) * 0.15;
 
                 const rows = document.querySelectorAll('#ordersTable tbody tr');
                 rows.forEach(row => {
-                let deliveryDate = row.cells[5].innerText;
-                let orderVolume = parseFloat(row.cells[4].innerText);
-                if (date == deliveryDate) {
+                let deliveryDate = row.cells[6].innerText;
+                let orderVolume = parseFloat(row.cells[5].innerText);
+                if (new_date == deliveryDate) {
                     if (orderVolume <= presentVolume) {
                         row.style.backgroundColor = 'green';
                         presentVolume -= orderVolume;
