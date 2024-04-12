@@ -19,6 +19,7 @@
             align-items: center; 
             flex-direction: column;
             background-image: url('./woodbg.jpg');
+
         }
         .container {
             background-color: #fff;
@@ -69,12 +70,12 @@
         }
         th, td {
             padding: 12px;
-            text-align: left;
             border-bottom: 1px solid #ddd;
         }
         th {
             background-color: #f2f2f2;
         }
+    
         .edit-btn, .split-btn,.vol-edit-btn {
             background-color: #28a745;
             color: #fff;
@@ -107,12 +108,13 @@
             transform: translate(-50%, -50%) scale(1);
         }
         .table-wrapper {
-            background-color: #fff;
+            background-color: #BBC2E2;
             width: 80%;
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
+            background-image: url('./BG.jpg');
         }
         .table-wrapper h2 {
             font-size: 20px;
@@ -126,7 +128,7 @@
         }
         .table-wrapper th, .table-wrapper td {
             padding: 12px;
-            text-align: left;
+            text-align: center;
             border-bottom: 1px solid #ddd;
         }
         .table-wrapper th {
@@ -253,6 +255,13 @@
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
         }
+        .remaining-vol{
+            padding: 20px 0px 0px 0px;
+        }
+        h1{
+            padding: 20px;
+            color: black;
+        }
     </style>
 </head>
 <body>
@@ -314,7 +323,7 @@
         <div class="update-volume" id="updatevolume">
             <button class="close-uvform" onclick="closeuvform()">X</button>
             <form method="POST" action="/update_volume">
-                <input type="number" name="uvSl" readonly>
+                <input type="number" name="uvSl" readonly hidden>
                 <input type="number" placeholder="Volume" name="uvvolume">
                 <input type="date" name="uvproductiondate">
                 <input type="submit" value="Update Production Data">
@@ -335,7 +344,7 @@
         <div class="table-wrapper">
             <h6 hidden><%= productiondata.slno %></h6> 
             <h2>Production Date: <%= prod_date %></h2> 
-            <h2>Total Volume Produced: <%= parseFloat(productiondata.volume); %></h2>
+            <h2>Total Volume Produced: <%= parseFloat(productiondata.volume); %> Lts</h2>
             <button class="vol-edit-btn" onclick="editVolume('<%= productiondata.slno %>','<%= parseFloat(productiondata.volume); %>','<%= prod_date %>')">Edit Production</button>
             <% let totalOrderedVolume = 0; %>
             <table id="ordersTable">
@@ -387,7 +396,7 @@
                 </tbody>
             </table>
             <% const remainingVolume = parseFloat(productiondata.volume) - totalOrderedVolume; %>
-            <h2>Remaining Volume: <%= remainingVolume %></h2>
+            <h2 class="remaining-vol">Remaining Volume: <%= remainingVolume %> Lts</h2>
         </div>
     <% }) %>
 

@@ -51,6 +51,17 @@ app.get('/', async(req,res)=>{
     }
 });
 
+app.get('/dashboard', async(req,res)=>{
+    try {
+        const results = await client.query('SELECT *, delivery_date FROM orders');
+        const vol_results = await client.query('SELECT * FROM volume');
+        res.render('dashboard.ejs', {all_orders: results.rows, f_volume: vol_results.rows});
+    } catch (err) {
+        console.log(err);
+    }
+});
+
+
 app.post('/update_order', (req, res) => {
     let data = req.body;
     let total_quantity = data.usvolume * data.uquantity;
