@@ -75,7 +75,7 @@ th, td {
     cursor: pointer;
     transition: background-color 0.3s;
 }
-.edit-btn:hover, .split-btn:hover, .vol-edit-btn:hover, .wastage-btn:hover {
+.edit-btn:hover, .split-btn:hover, .vol-edit-btn:hover, .wastage-btn {
     background-color: #218838;
 }
 .update-form {
