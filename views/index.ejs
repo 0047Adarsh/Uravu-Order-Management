@@ -4,275 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Management System</title>
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body{
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
-            height: 100vh;
-            display: flex;
-            align-items: center; 
-            flex-direction: column;
-            background-image: url('./woodbg.jpg');
-
-        }
-        .container {
-            background-color: #fff;
-            width: 25%;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .container h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-            text-align: center;
-            color: #007bff;
-        }
-        .form-container {
-            margin-bottom: 20px;
-        }
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            background-color: #f9f9f9;
-        }
-        input[type="submit"], input[type="button"] {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            font-size: 18px;
-            background-color: #007bff;
-            color: #fff;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        input[type="submit"]:hover, input[type="button"]:hover {
-            background-color: #0056b3;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    
-        .edit-btn, .split-btn,.vol-edit-btn {
-            background-color: #28a745;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .edit-btn:hover {
-            background-color: #218838;
-        }
-        .update-form {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            width: 60%;
-            max-width: 400px;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            opacity: 0;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        .update-form.show {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-        }
-        .table-wrapper {
-            background-color: #BBC2E2;
-            width: 80%;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-            background-image: url('./BG.jpg');
-        }
-        .table-wrapper h2 {
-            font-size: 20px;
-            margin-bottom: 10px;
-            text-align: center;
-            color: #333;
-        }
-        .table-wrapper table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .table-wrapper th, .table-wrapper td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-        .table-wrapper th {
-            background-color: #f2f2f2;
-        }
-        .dragging {
-            opacity: 0.5;
-        }
-        .new-btn-container{
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background-color: #218838;
-            border-radius: 20px;
-        }
-        .new-btn{
-            background-color: #fff;
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .container{
-            display: none;
-            position: fixed;
-            top: 50%;
-            left:50%
-        }
-        .container.show {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-        }
-        .close-form {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            padding: 8px 12px;
-            font-size: 16px;
-            background-color: #dc3545;
-            color: #fff; 
-            font-weight: bold;
-            border-radius: 50%; 
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .close-form:hover {
-            background-color: #c82333;
-        }
-
-        .split-form {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            width: 60%;
-            max-width: 400px;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            opacity: 0;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        .split-form.show {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-        }
-
-        .split-form form {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-
-        .split-form form .form-group {
-            flex: 0 0 48%; 
-            margin-bottom: 10px;
-        }
-
-        .split-form form .form-group input,
-        .split-form form .form-group select {
-            width: 100%;
-        }
-
-        .split-form form input[type="submit"] {
-            width: 100%;
-        }
-
-        .close-sform, .close-uoform, .close-uvform {
-            position: absolute;
-            top: 10px;
-            right: 5px;
-            padding: 8px 12px;
-            font-size: 16px;
-            background-color: #dc3545;
-            color: #fff; 
-            font-weight: bold;
-            border-radius: 50%; 
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .close-sform:hover {
-            background-color: #c82333;
-        }
-        .update-volume{
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            width: 60%;
-            max-width: 400px;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            opacity: 0;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        .update-volume.show {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-        }
-        .remaining-vol{
-            padding: 20px 0px 0px 0px;
-        }
-        h1{
-            padding: 20px;
-            color: black;
-        }
-    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <link href="./css/style.css" rel="stylesheet"/>
 </head>
 <body>
-    <h1>Order Management System</h1>
+    <header>
+        <div class="header">
+            <div class="new-btn-container">
+                <button class="new-btn" onclick="openform('.container-volume')">Add Volume</button> 
+                <button class="new-btn" onclick="openform('.container')">Add Order</button>
+            </div>
+            <div>
+                <h1>Order Management System</h1>
+            </div>
+            <div class="new-btn-container">
+                <button class="new-btn" onclick="openform('.container-customer')">Add Customer</button>
+            </div>
+        </div>
+    </header>
+    <!-- <header>
+        <nav class="header">
+            <div>
+                <h1>Order Management System</h1>
+            </div>
+            <div class="nav-links">
+                <div class="new-btn-container"> 
+                    <button class="new-btn" onclick="openform()">Add New</button>
+                </div>
+                <div class="new-btn-container">
+                    <button class="new-btn" onclick="">Add Customer</button>
+                </div>
+            </div>
+        </nav>
+    </header> -->
+    
     <div id="f_volume_data" data-volume='<%= JSON.stringify(f_volume) %>'></div>
-    <div class="new-btn-container">
+    <!-- <div class="new-btn-container">
         <button class="new-btn" onclick="openform()">Add New</button>
+    </div> -->
+    <div class="container-customer">
+        <button class="close-form" onclick="closeform('.container-customer')">X</button>
+            <div class="form-container">
+                <form method="POST" action="/addcustomer">
+                    <input type="text" placeholder="Customer Name" name="customer">
+                    <input type="submit" value="Add Customer">
+                </form>
+            </div>
     </div>
-    <div class="container">
-        <div id='new-form'>
-            <button class="close-form" onclick="closeform()">X</button>
+    <div class="container-volume">
+        <button class="close-form" onclick="closeform('.container-volume')">X</button>
             <div class="form-container">
                 <form method="POST" action="/volume">
                     <input type="text" placeholder="Volume" name="volume">
@@ -280,6 +60,10 @@
                     <input type="submit" value="Update Volume">
                 </form>
             </div>
+    </div>
+    <div class="container">
+        <div id='new-form'>
+            <button class="close-form" onclick="closeform('.container')">X</button>
             <div class="form-container">
                 <form method="POST" action="/order" id="orderForm">
                     <% let number = 1; %>
@@ -293,7 +77,12 @@
                         <%} %>
                     <%}) %>
                     <input type="number" name="Slno" value="<%= number %>" readonly>
-                    <input type="text" placeholder="Customer Name" name="name" >
+                    <!-- <input type="text" placeholder="Customer Name" name="name" > -->
+                    <select id="customerSelect" name="name">
+                        <% customer_names.forEach(customer=>{ %>
+                            <option value="<%= customer.customer_name %>"><%= customer.customer_name %></option>
+                        <% }); %>
+                    </select>
                     <select name="svolume">
                         <option selected value="0.5">500ml</option>
                         <option value="0.75">750ml</option>
@@ -306,11 +95,16 @@
         </div>    
     </div>
         <div class="update-form" id="updateform">
-            <button class="close-uoform" onclick="closeuoform()">X</button>
+            <button class="close-uoform" onclick="closeform('.update-form')">X</button>
             <form method="POST" action="/update_order">
                 <input type="number" name="uSerial" readonly hidden>
                 <input type="number" name="uSlno" readonly>
-                <input type="text" placeholder="Customer Name" name="uname" >
+                <!-- <input type="text" placeholder="Customer Name" name="uname" > -->
+                <select id="customerSelect1" name="uname">
+                    <% customer_names.forEach(customer=>{ %>
+                        <option value="<%= customer.customer_name %>"><%= customer.customer_name %></option>
+                    <% }); %>
+                </select>
                 <select name="usvolume">
                     <option selected value="0.5">500ml</option>
                     <option value="0.75">750ml</option>
@@ -321,12 +115,22 @@
             </form>
         </div>
         <div class="update-volume" id="updatevolume">
-            <button class="close-uvform" onclick="closeuvform()">X</button>
+            <button class="close-uvform" onclick="closeform('.update-volume')">X</button>
             <form method="POST" action="/update_volume">
                 <input type="number" name="uvSl" readonly hidden>
                 <input type="number" placeholder="Volume" name="uvvolume">
                 <input type="date" name="uvproductiondate">
                 <input type="submit" value="Update Production Data">
+            </form>
+        </div>
+
+        <div class="update-wastage" id="wastage-volume">
+            <button class="close-uvform" onclick="closeform('.update-wastage')">X</button>
+            <form method="POST" action="/update_wastage">
+                <input type="number" name="slno" readonly hidden>
+                <input type="number" placeholder="Wastage Volume" name="wastage">
+                <input type="date" name="wastage-date" readonly>
+                <input type="submit" value="Update">
             </form>
         </div>
         
@@ -344,8 +148,10 @@
         <div class="table-wrapper">
             <h6 hidden><%= productiondata.slno %></h6> 
             <h2>Production Date: <%= prod_date %></h2> 
-            <h2>Total Volume Produced: <%= parseFloat(productiondata.volume); %> Lts</h2>
-            <button class="vol-edit-btn" onclick="editVolume('<%= productiondata.slno %>','<%= parseFloat(productiondata.volume); %>','<%= prod_date %>')">Edit Production</button>
+            <h2>Volume Produced: <%= parseFloat(productiondata.volume); %> Lts</h2>
+            <h2>Total Volume: <%= parseFloat(productiondata.total_volume); %> Lts</h2>
+            <button class="vol-edit-btn" onclick="editVolume('<%= productiondata.slno %>','<%= parseFloat(productiondata.volume); %>','<%= prod_date %>')">Edit</button>
+            <button class="wastage-btn" onclick="wastage('<%= productiondata.slno %>','<%= parseFloat(productiondata.wastage_volume); %>','<%= prod_date %>')">Add Wastage Volume</button>
             <% let totalOrderedVolume = 0; %>
             <table id="ordersTable">
                 <thead> 
@@ -355,14 +161,15 @@
                         <th>Name</th>
                         <th>Volume</th>
                         <th>Quantity</th>
-                        <th>Total Quantity</th>
+                        <th>Total Volume</th>
                         <th>Delivery Date</th>
-                        <th>Fulfilled By</th>
+                        <th hidden>Fulfilled By</th>
                         <th>Action</th>
                         <th>Split Order</th>
+                        <th>Order Status</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody> 
                     <% all_orders.forEach((order, index) => { %>
                         <%
                             const fullDate = new Date(order.delivery_date);
@@ -372,8 +179,6 @@
                             const ord_date = `${year}-${month}-${day}`;
                         %>
                         <% if(prod_date === ord_date){%>
-                            <% let totalVolume = order.volume * order.quantity; %>
-                            <% totalOrderedVolume += totalVolume; %>
                             <tr>
                                 <td hidden><%= order.sequence %></td>
                                 <td><%= order.slno %></td>
@@ -383,27 +188,28 @@
                                 <td><%= order.total_quantity %></td>
                                 <% total += total %>
                                 <td><%= ord_date %></td>
-                                <td>9AM</td>
+                                <td hidden>9AM</td>
                                 <td>
                                     <button class="edit-btn" onclick="editOrder('<%= order.sequence %>','<%= order.slno %>', '<%= order.customer_name %>', '<%= order.volume %>', '<%= order.quantity %>', '<%= ord_date %>')">Edit</button>
                                 </td>
                                 <td>
                                     <button class="split-btn" onclick="splitOrder('<%= order.sequence %>','<%= order.slno %>', '<%= order.customer_name %>', '<%= order.volume %>', '<%= order.quantity %>', '<%= ord_date %>')">Split</button>
                                 </td>
+                                <td><%= order.order_status %></td>
                             </tr>
                         <% } %>
                     <% }); %>
                 </tbody>
             </table>
-            <% const remainingVolume = parseFloat(productiondata.volume) - totalOrderedVolume; %>
-            <h2 class="remaining-vol">Remaining Volume: <%= remainingVolume %> Lts</h2>
+            <h2 class="remaining-vol">Remaining Volume: <%= productiondata.remaining_volume%> Lt</h2>
+            <h2 class="wastage-vol">Wastage Volume: <%= productiondata.wastage_volume%> Lt</h2>
         </div>
     <% }) %>
 
     <div class="split-form" id="splitform">
         <form method="POST" action="/split_order">
             <div class="form-group"> 
-                <button class="close-sform" onclick="closesform()">X</button>
+                <button class="close-sform" onclick="closeform('.split-form')">X</button>
                 <input type="number" name="sSerial" readonly hidden>
                 <input type="number" name="sSlno" readonly>
                 <input type="text" placeholder="Customer Name" name="sname" readonly>
@@ -429,7 +235,17 @@
         </form>
     </div>
 
+    <footer>
+        <p>&copy; 2024 Order Management System. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
+        $(document).ready(function() {
+            $('#customerSelect').select2();
+            $('#customerSelect1').select2();
+        });
         window.addEventListener('DOMContentLoaded', () => {
             const rows = document.querySelectorAll('#ordersTable tbody tr');
             let draggedRow = null;
@@ -460,130 +276,53 @@
         });   
         
         window.addEventListener('DOMContentLoaded', () => {
-            const f_volume_data_element = document.getElementById('f_volume_data');
-            const f_volume_data_string = f_volume_data_element.getAttribute('data-volume');
-            const f_volume_data = JSON.parse(f_volume_data_string);
-            f_volume_data.forEach(all_volume => {
-                const fullDate = new Date(all_volume.production_date);
-                const year = fullDate.getFullYear();
-                const month = (fullDate.getMonth() + 1).toString().padStart(2, '0');
-                const day = fullDate.getDate().toString().padStart(2, '0');
-                const new_date = `${year}-${month}-${day}`;
-                let presentVolume = parseFloat(all_volume.volume) * 0.85;
-                let bufferVolume = parseFloat(all_volume.volume) * 0.15;
-
-                const rows = document.querySelectorAll('#ordersTable tbody tr');
-                rows.forEach(row => {
-                let deliveryDate = row.cells[6].innerText;
-                let orderVolume = parseFloat(row.cells[5].innerText);
-                if (new_date == deliveryDate) {
-                    if (orderVolume <= presentVolume) {
-                        row.style.backgroundColor = '#9EE493';
-                        presentVolume -= orderVolume;
-                    } else if (orderVolume <= (presentVolume + bufferVolume)) {
-                        row.style.backgroundColor = '#D6D84F';
-                        bufferVolume -= (orderVolume - presentVolume);
-                        presentVolume = 0;
-                    } else {
-                        row.style.backgroundColor = '#E94F37';
-                        presentVolume = 0;
-                        bufferVolume = 0;
-                    }
-                }
-            });
-            });
+            updatecolors();
+            calculate_time();
         });
-
-        window.addEventListener('DOMContentLoaded', () => {
-                const f_volume_data_element = document.getElementById('f_volume_data');
-                const f_volume_data_string = f_volume_data_element.getAttribute('data-volume');
-                const f_volume_data = JSON.parse(f_volume_data_string);
-                let startTime = '10:00 AM';
-                let prevProductionDate = null;
-
-                f_volume_data.forEach(all_volume => {
-                    const rows = document.querySelectorAll('#ordersTable tbody tr');
-                    rows.forEach(row => {
-                        let productionDate = row.cells[6].innerText;
-                        let quantity = parseInt(row.cells[4].innerText);
-                        if (productionDate !== prevProductionDate) {
-                            startTime = '10:00 AM';
-                            prevProductionDate = productionDate;
-                        }
-
-                        let time_taken = (quantity * 0.15) / 60;
-                        let endTime = addTime(startTime, time_taken);
-                        row.cells[7].innerText = endTime;
-                        startTime = addTime(endTime, 0);
-                    });
-                });
-            });
-
-            function addTime(startTime, hours) {
-                let [hoursStr, minutesStr, ampm] = startTime.split(/:|\s/);
-                let startHours = parseInt(hoursStr);
-                let startMinutes = parseInt(minutesStr);
-                let totalMinutes = startHours * 60 + startMinutes + hours * 60;
-                let newHours = Math.floor(totalMinutes / 60);
-                let newMinutes = totalMinutes % 60;
-                let newAmPm = ampm;
-                
-                if (newHours >= 12) {
-                    newAmPm = 'PM';
-                }
-                
-                if (newHours > 12) {
-                    newHours -= 12;
-                }
-
-                return `${newHours}:${newMinutes < 10 ? '0' + newMinutes : newMinutes} ${newAmPm}`;
-            }
 
         function calculate_time()
         {
-        const f_volume_data_element = document.getElementById('f_volume_data');
-        const f_volume_data_string = f_volume_data_element.getAttribute('data-volume');
-        const f_volume_data = JSON.parse(f_volume_data_string);
-        let startTime = '10:00 AM';
-        let prevProductionDate = null;
+            const f_volume_data_element = document.getElementById('f_volume_data');
+            const f_volume_data_string = f_volume_data_element.getAttribute('data-volume');
+            const f_volume_data = JSON.parse(f_volume_data_string);
+            let startTime = '10:00 AM';
+            let prevProductionDate = null;
 
-        f_volume_data.forEach(all_volume => {
-            const rows = document.querySelectorAll('#ordersTable tbody tr');
-            rows.forEach(row => {
-                let productionDate = row.cells[6].innerText;
-                let quantity = parseInt(row.cells[4].innerText);
-                if (productionDate !== prevProductionDate) {
-                    startTime = '10:00 AM';
-                    prevProductionDate = productionDate;
-                }
+            f_volume_data.forEach(all_volume => {
+                const rows = document.querySelectorAll('#ordersTable tbody tr');
+                rows.forEach(row => {
+                    let productionDate = row.cells[6].innerText;
+                    let quantity = parseInt(row.cells[4].innerText);
+                    if (productionDate !== prevProductionDate) {
+                        startTime = '10:00 AM';
+                        prevProductionDate = productionDate;
+                    }
 
-                let time_taken = (quantity * 0.15) / 60;
-                let endTime = addTime(startTime, time_taken);
-                row.cells[7].innerText = endTime;
-                startTime = addTime(endTime, 0);
+                    let time_taken = (quantity * 0.15) / 60;
+                    let endTime = addTime(startTime, time_taken);
+                    row.cells[7].innerText = endTime;
+                    startTime = addTime(endTime, 0);
+                });
             });
-        });
-    };
+        };
 
-    function addTime(startTime, hours) {
-        let [hoursStr, minutesStr, ampm] = startTime.split(/:|\s/);
-        let startHours = parseInt(hoursStr);
-        let startMinutes = parseInt(minutesStr);
-        let totalMinutes = startHours * 60 + startMinutes + hours * 60;
-        let newHours = Math.floor(totalMinutes / 60);
-        let newMinutes = totalMinutes % 60;
-        let newAmPm = ampm;
-        
-        if (newHours >= 12) {
-            newAmPm = 'PM';
+        function addTime(startTime, hours) {
+            let [hoursStr, minutesStr, ampm] = startTime.split(/:|\s/);
+            let startHours = parseInt(hoursStr);
+            let startMinutes = parseInt(minutesStr);
+            let totalMinutes = startHours * 60 + startMinutes + hours * 60;
+            let newHours = Math.floor(totalMinutes / 60);
+            let newMinutes = totalMinutes % 60;
+            let newAmPm = ampm;
+            
+            if (newHours >= 12) {
+                newAmPm = 'PM';
+            }      
+            if (newHours > 12) {
+                newHours -= 12;
+            }
+            return `${newHours}:${newMinutes < 10 ? '0' + newMinutes : newMinutes} ${newAmPm}`;
         }
-        
-        if (newHours > 12) {
-            newHours -= 12;
-        }
-
-        return `${newHours}:${newMinutes < 10 ? '0' + newMinutes : newMinutes} ${newAmPm}`;
-    }
 
         function updatecolors(){
             const f_volume_data_element = document.getElementById('f_volume_data');
@@ -595,23 +334,24 @@
                 const month = (fullDate.getMonth() + 1).toString().padStart(2, '0');
                 const day = fullDate.getDate().toString().padStart(2, '0');
                 const new_date = `${year}-${month}-${day}`;
-                let presentVolume = parseFloat(all_volume.volume) * 0.85;
-                let bufferVolume = parseFloat(all_volume.volume) * 0.15;
+                let presentVolume = parseFloat(all_volume.total_volume) * 0.85;
+                let bufferVolume = parseFloat(all_volume.total_volume) * 0.15;
 
                 const rows = document.querySelectorAll('#ordersTable tbody tr');
                 rows.forEach(row => {
                 let deliveryDate = row.cells[6].innerText;
                 let orderVolume = parseFloat(row.cells[5].innerText);
+                let cell = row.cells[4];
                 if (new_date == deliveryDate) {
                     if (orderVolume <= presentVolume) {
-                        row.style.backgroundColor = '#9EE493';
+                        cell.style.backgroundColor = '#9EE493';
                         presentVolume -= orderVolume;
                     } else if (orderVolume <= (presentVolume + bufferVolume)) {
-                        row.style.backgroundColor = '#D6D84F';
+                        cell.style.backgroundColor = '#D6D84F';
                         bufferVolume -= (orderVolume - presentVolume);
                         presentVolume = 0;
                     } else {
-                        row.style.backgroundColor = '#E94F37';
+                        cell.style.backgroundColor = '#E94F37';
                         presentVolume = 0;
                         bufferVolume = 0;
                     }
@@ -623,7 +363,7 @@
         function editOrder(Serial, Slno, name, svolume, quantity, date) {
             document.getElementsByName('uSerial')[0].value = Serial;
             document.getElementsByName('uSlno')[0].value = Slno;
-            document.getElementsByName('uname')[0].value = name;
+            document.querySelector('#customerSelect1').value = name;
             document.getElementsByName('usvolume')[0].value = svolume;
             document.getElementsByName('uquantity')[0].value = quantity;
             document.getElementsByName('udeliverydate')[0].value = date;
@@ -637,6 +377,14 @@
             document.getElementsByName('uvproductiondate')[0].value = date;
             document.getElementById('updatevolume').style.display = 'block';
             document.getElementById('updatevolume').classList.add('show');
+        }
+
+        function wastage(Slno, volume, date) {
+            document.getElementsByName('slno')[0].value = Slno;
+            document.getElementsByName('wastage')[0].value = volume;
+            document.getElementsByName('wastage-date')[0].value = date;
+            document.getElementById('wastage-volume').style.display = 'block';
+            document.getElementById('wastage-volume').classList.add('show');
         }
 
 
@@ -670,29 +418,15 @@
             document.getElementById('orderForm').submit();
         }
 
-        function openform(){
-            document.querySelector('.container').style.display = 'block';
-            document.querySelector('.container').classList.add('show');
+        function openform(form){
+            document.querySelector(form).style.display = 'block';
+            document.querySelector(form).classList.add('show');
         }
 
-        function closeform(){
-            document.querySelector('.container').style.display = 'none';
-            document.querySelector('.container').classList.remove('show');
-        }
-
-        function closesform(){
-            document.querySelector('.split-form').style.display = 'none';
-            document.querySelector('.split-form').classList.remove('show');
-        }
-
-        function closeuoform(){
-            document.querySelector('.update-form').style.display = 'none';
-            document.querySelector('.update-form').classList.remove('show');
-        }
-
-        function closeuvform(){
-            document.querySelector('.update-volume').style.display = 'none';
-            document.querySelector('.update-volume').classList.remove('show');
+        function closeform(form)
+        {
+            document.querySelector(`${form}`).style.display = 'none';
+            document.querySelector(`${form}`).classList.remove = 'show';
         }
     </script>
 </body>

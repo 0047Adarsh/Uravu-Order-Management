@@ -3,39 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Dashboard</title>
     <style>
-        *{
-            margin: 0px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .container{
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            animation: slide-in 0.5s ease-out;
+        }
+        @keyframes slide-in {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #758ECD;
+            animation: color-change 2s infinite alternate;
+        }
+        @keyframes color-change {
+            from {
+                color: #758ECD;
+            }
+            to {
+                color: #5679A6;
+            }
+        }
+        #calendar {
             display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            animation: slide-up 1s ease-out;
+        }
+        @keyframes slide-up {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        #calendar input[type="date"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+        }
+        .order-display {
+            overflow: auto;
+            animation: slide-left 1s ease-out;
+        }
+        @keyframes slide-left {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            animation: fade-in 1s ease-out;
+        }
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
             background-color: #758ECD;
-            height: 100vh;
+            color: #fff;
         }
-        #calendar{
-            width: 50%;
-            background-color: transparent;
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
         }
-        #order-display{
-            width: 50%;
-            background-color: #2F4858;
+        .options {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            outline: none;
+            background-color: #758ECD;
+            color: #fff;
         }
-    </style> 
+        .options:hover {
+            background-color: #5679A6;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <div id="calendar">
             <input type="date">
         </div>
-        <div id="order-display">
-            <% all_orders.forEach(order => { %>
-                <% let name = order.customer_name %>
-                <% let volume = order.volume %> 
-                <% let quantity = order.quantity %>
-                <li><%= name%> <%= volume%> <%= quantity%></li> 
-            <% }); %>
+        <div class="order-display">
+            <table id="order-table">
+                <thead>
+                    <tr>
+                        <th>Slno.</th>
+                        <th>Customer Name</th>
+                        <th>Bottle Volume</th>
+                        <th>Quantity</th>
+                        <th>Delivery Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% all_orders.forEach((order) => { %>
+                        <%
+                            const fullDate = new Date(order.delivery_date);
+                            const year = fullDate.getFullYear();
+                            const month = (fullDate.getMonth() + 1).toString().padStart(2, '0');
+                            const day = fullDate.getDate().toString().padStart(2, '0');
+                            const deliverydate = `${year}-${month}-${day}`;
+                        %>  
+                        <tr>
+                            <td class="seq"><%= order.sequence %></td>
+                            <td><%= order.customer_name %></td>
+                            <td><%= order.volume*1000 %></td> 
+                            <td><%= order.quantity %></td> 
+                            <td><%= deliverydate %></td>                   
+                            <td><select class="options" id="<%= order.sequence %>">
+                                <option value="null" <%= order.order_status === 'null' ? 'selected' : '' %>>--Select--</option>
+                                <option value="Bottle Availability" <%= order.order_status === 'Bottle Availability' ? 'selected' : '' %>>Bottle Availability</option>
+                                <option value="Clipping" <%= order.order_status === 'Clipping' ? 'selected' : '' %>>Clipping</option>
+                                <option value="Washing" <%= order.order_status === 'Washing' ? 'selected' : '' %>>Washing</option>
+                                <option value="Rinsing" <%= order.order_status === 'Rinsing' ? 'selected' : '' %>>Rinsing</option>
+                                <option value="Filling" <%= order.order_status === 'Filling' ? 'selected' : '' %>>Filling</option>
+                                <option value="Capping" <%= order.order_status === 'Capping' ? 'selected' : '' %>>Capping</option>
+                                <option value="Batch Coding" <%= order.order_status === 'Batch Coding' ? 'selected' : '' %>>Batch Coding</option>
+                                <option value="QC" <%= order.order_status === 'QC' ? 'selected' : '' %>>QC</option>
+                                <option value="Packaging" <%= order.order_status === 'Packaging' ? 'selected' : '' %>>Packaging</option>
+                                <option value="Dispatch" <%= order.order_status === 'Dispatch' ? 'selected' : '' %>>Dispatch</option>
+                            </select></td>
+                        </tr>   
+                    <% }); %>
+                </tbody>
+            </table>
         </div>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+    attachStatusChangeListeners();
+
+    document.querySelector('#calendar input[type="date"]').addEventListener('change', async function(){
+        let selected_date = this.value;
+        try {
+            const response = await fetch('/filtered', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ selected_date })
+            });
+            if (response.ok) {
+                const filteredOrders = await response.json();
+                updateOrderDisplay(filteredOrders);
+                attachStatusChangeListeners();
+                alert('Orders filtered successfully');
+            } else {
+                alert('Failed to filter orders');
+            }
+        } catch (error) {
+            console.log('Error filtering orders:', error);
+            alert('Error filtering orders');
+        }
+    });
+
+    function attachStatusChangeListeners() {
+        document.querySelectorAll('.options').forEach(button => {
+            button.addEventListener('change', async function() {
+                const orderId = this.id;
+                const type = this.value;
+                try {
+                    const response = await fetch('/update_order_status', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ orderId, type })
+                    });
+                    if (response.ok) {
+                        alert('Order status updated successfully');
+                    } else {
+                        alert('Failed to update order status');
+                    }
+                } catch (error) {
+                    alert('Error updating order status:', error);
+                }
+            });
+        });
+    }
+
+    function updateOrderDisplay(orders) {
+        const tbody = document.querySelector('#order-table tbody');
+        tbody.innerHTML = '';
+        orders.forEach(order => {
+            const fullDate = new Date(order.delivery_date);
+            const year = fullDate.getFullYear();
+            const month = (fullDate.getMonth() + 1).toString().padStart(2, '0');
+            const day = fullDate.getDate().toString().padStart(2, '0');
+            const deliverydate = `${year}-${month}-${day}`;
+
+            const row = `
+                <tr>
+                    <td class="seq">${order.sequence}</td>
+                    <td>${order.customer_name}</td>
+                    <td>${order.volume * 1000}</td> 
+                    <td>${order.quantity}</td> 
+                    <td>${deliverydate}</td>                   
+                    <td>
+                        <select class="options" id="${order.sequence}">
+                            <option value="null" ${order.order_status === 'null' ? 'selected' : ''}>--Select--</option>
+                            <option value="Bottle Availability" ${order.order_status === 'Bottle Availability' ? 'selected' : '' }>Bottle Availability</option>
+                            <option value="Clipping" ${order.order_status === 'Clipping' ? 'selected' : '' }>Clipping</option>
+                            <option value="Washing" ${order.order_status === 'Washing' ? 'selected' : '' }>Washing</option>
+                            <option value="Rinsing" ${order.order_status === 'Rinsing' ? 'selected' : '' }>Rinsing</option>
+                            <option value="Filling" ${order.order_status === 'Filling' ? 'selected' : '' }>Filling</option>
+                            <option value="Capping" ${order.order_status === 'Capping' ? 'selected' : '' }>Capping</option>
+                            <option value="Batch Coding" ${order.order_status === 'Batch Coding' ? 'selected' : '' }>Batch Coding</option>
+                            <option value="QC" ${order.order_status === 'QC' ? 'selected' : '' }>QC</option>
+                            <option value="Packaging" ${order.order_status === 'Packaging' ? 'selected' : '' }>Packaging</option>
+                            <option value="Dispatch" ${order.order_status === 'Dispatch' ? 'selected' : '' }>Dispatch</option>
+                        </select>
+                    </td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+    }
+});
+
+    </script>
 </body>
 </html>
