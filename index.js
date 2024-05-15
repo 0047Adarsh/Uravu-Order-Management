@@ -13,8 +13,8 @@ app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
 app.use(express.static(join(__dirname, 'public')));
 
-//var conString = "postgres://xnqqtxls:AyyL6iD3RUYkb53cYXVaMwMKDiR60uVf@floppy.db.elephantsql.com/xnqqtxls"
-var conString = "postgres://lyzxcret:fVewYdhtTUcY6fDnyFwVMMMnDm0VaH53@floppy.db.elephantsql.com/lyzxcret"
+var conString = "postgres://xnqqtxls:AyyL6iD3RUYkb53cYXVaMwMKDiR60uVf@floppy.db.elephantsql.com/xnqqtxls"
+//var conString = "postgres://lyzxcret:fVewYdhtTUcY6fDnyFwVMMMnDm0VaH53@floppy.db.elephantsql.com/lyzxcret"
 
 var client = new pg.Client(conString);
 client.connect()
