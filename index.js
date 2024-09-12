@@ -4,18 +4,19 @@ import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import ejs, { render } from "ejs";
 import pg from "pg";
+import dotenv from "dotenv";
 
+dotenv.config()
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = 3000;
 
+
 app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
-app.use(express.static(join(__dirname, 'public')));
 
-var conString = "postgres://xnqqtxls:AyyL6iD3RUYkb53cYXVaMwMKDiR60uVf@floppy.db.elephantsql.com/xnqqtxls"
-//var conString = "postgres://lyzxcret:fVewYdhtTUcY6fDnyFwVMMMnDm0VaH53@floppy.db.elephantsql.com/lyzxcret"
 
+const conString = process.env.DATABASE;
 var client = new pg.Client(conString);
 client.connect()
 

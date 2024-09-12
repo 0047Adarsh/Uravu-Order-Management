@@ -16,7 +16,7 @@
             overflow-x: hidden;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 20px auto;
             padding: 20px;
             background-color: #fff;
@@ -126,10 +126,18 @@
         .options:hover {
             background-color: #5679A6;
         }
-    </style>
+        #others input {
+            background-color: red;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: white;
+        }
+    </style>w
 </head>
 <body>
     <div class="container">
+        <h1>Order Dashboard</h1>
         <div id="calendar">
             <input type="date">
         </div>
@@ -143,6 +151,7 @@
                         <th>Quantity</th>
                         <th>Delivery Date</th>
                         <th>Status</th>
+                        <th>Timer</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -154,123 +163,163 @@
                             const day = fullDate.getDate().toString().padStart(2, '0');
                             const deliverydate = `${year}-${month}-${day}`;
                         %>  
-                        <tr>
+                        <tr data-quantity="<%= order.quantity %>">
                             <td class="seq"><%= order.sequence %></td>
                             <td><%= order.customer_name %></td>
                             <td><%= order.volume*1000 %></td> 
                             <td><%= order.quantity %></td> 
                             <td><%= deliverydate %></td>                   
-                            <td><select class="options" id="<%= order.sequence %>">
-                                <option value="null" <%= order.order_status === 'null' ? 'selected' : '' %>>--Select--</option>
-                                <option value="Bottle Availability" <%= order.order_status === 'Bottle Availability' ? 'selected' : '' %>>Bottle Availability</option>
-                                <option value="Clipping" <%= order.order_status === 'Clipping' ? 'selected' : '' %>>Clipping</option>
-                                <option value="Washing" <%= order.order_status === 'Washing' ? 'selected' : '' %>>Washing</option>
-                                <option value="Rinsing" <%= order.order_status === 'Rinsing' ? 'selected' : '' %>>Rinsing</option>
-                                <option value="Filling" <%= order.order_status === 'Filling' ? 'selected' : '' %>>Filling</option>
-                                <option value="Capping" <%= order.order_status === 'Capping' ? 'selected' : '' %>>Capping</option>
-                                <option value="Batch Coding" <%= order.order_status === 'Batch Coding' ? 'selected' : '' %>>Batch Coding</option>
-                                <option value="QC" <%= order.order_status === 'QC' ? 'selected' : '' %>>QC</option>
-                                <option value="Packaging" <%= order.order_status === 'Packaging' ? 'selected' : '' %>>Packaging</option>
-                                <option value="Dispatch" <%= order.order_status === 'Dispatch' ? 'selected' : '' %>>Dispatch</option>
-                            </select></td>
+                            <td id="others">
+                                <input type="button" value="Bottle Availability" class="options">
+                                <input type="button" value="Clipping" class="options">
+                                <input type="button" value="Washing" class="options">
+                                <input type="button" value="Rinsing" class="options">
+                                <input type="button" value="Filling" class="options">
+                                <input type="button" value="Capping" class="options">
+                                <input type="button" value="Batch Coding" class="options">
+                                <input type="button" value="QC" class="options">
+                                <input type="button" value="Packaging" class="options">
+                                <input type="button" value="Dispatch" class="options">
+                            </td>
+                            <td class="timer" data-timer-id="<%= order.sequence %>">00:00:00</td>
                         </tr>   
                     <% }); %>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <div class="second-table">
+        <table>
+            <thead>
+
+            </thead>
+        </table>
+    </div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-    attachStatusChangeListeners();
-
-    document.querySelector('#calendar input[type="date"]').addEventListener('change', async function(){
-        let selected_date = this.value;
-        try {
-            const response = await fetch('/filtered', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ selected_date })
-            });
-            if (response.ok) {
-                const filteredOrders = await response.json();
-                updateOrderDisplay(filteredOrders);
-                attachStatusChangeListeners();
-                alert('Orders filtered successfully');
-            } else {
-                alert('Failed to filter orders');
-            }
-        } catch (error) {
-            console.log('Error filtering orders:', error);
-            alert('Error filtering orders');
-        }
-    });
-
-    function attachStatusChangeListeners() {
-        document.querySelectorAll('.options').forEach(button => {
-            button.addEventListener('change', async function() {
-                const orderId = this.id;
-                const type = this.value;
+            let currentTimerInterval = null;
+            attachStatusChangeListeners();
+            document.querySelector('#calendar input[type="date"]').addEventListener('change', async function() {
+                let selected_date = this.value;
                 try {
-                    const response = await fetch('/update_order_status', {
+                    const response = await fetch('/filtered', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ orderId, type })
+                        body: JSON.stringify({ selected_date })
                     });
                     if (response.ok) {
-                        alert('Order status updated successfully');
+                        const filteredOrders = await response.json();
+                        updateOrderDisplay(filteredOrders);
+                        attachStatusChangeListeners();
+                        alert('Orders filtered successfully');
                     } else {
-                        alert('Failed to update order status');
+                        alert('Failed to filter orders');
                     }
                 } catch (error) {
-                    alert('Error updating order status:', error);
+                    console.log('Error filtering orders:', error);
+                    alert('Error filtering orders');
                 }
             });
+
+            function attachStatusChangeListeners() {
+                document.querySelectorAll('.options').forEach(button => {
+                    button.addEventListener('click', async function() {
+                        const orderId = this.closest('tr').querySelector('.seq').textContent;
+                        const type = this.value;
+                        const timerElement = this.closest('tr').querySelector('.timer');
+                        const quantity = this.closest('tr').dataset.quantity;
+                        
+                        if (currentTimerInterval) {
+                            clearInterval(currentTimerInterval);
+                        }
+
+                        startTimer(timerElement, quantity);
+
+                        try {
+                            const response = await fetch('/update_order_status', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ orderId, type })
+                            });
+                            if (response.ok) {
+                                alert('Order status updated successfully');
+                            } else {
+                                alert('Failed to update order status');
+                            }
+                        } catch (error) {
+                            alert('Error updating order status:', error);
+                        }
+                    });
+                });
+            }
+            
+            function startTimer(timerElement, quantity) {
+                const totalSeconds = Math.ceil((quantity / 500) * 3600);
+                let remainingSeconds = totalSeconds;
+
+                function updateTimer() {
+                    const hours = Math.floor(remainingSeconds / 3600).toString().padStart(2, '0');
+                    const minutes = Math.floor((remainingSeconds % 3600) / 60).toString().padStart(2, '0');
+                    const seconds = (remainingSeconds % 60).toString().padStart(2, '0');
+                    timerElement.textContent = `${hours}:${minutes}:${seconds}`;
+
+                    if (remainingSeconds > 0) {
+                        remainingSeconds -= 1;
+                    } else {
+                        clearInterval(currentTimerInterval);
+                    }
+                }
+
+                currentTimerInterval = setInterval(updateTimer, 1000);
+                updateTimer(); 
+            }
+
+            function updateOrderDisplay(orders) {
+                const tbody = document.querySelector('#order-table tbody');
+                tbody.innerHTML = '';
+                orders.forEach(order => {
+                    const fullDate = new Date(order.delivery_date);
+                    const year = fullDate.getFullYear();
+                    const month = (fullDate.getMonth() + 1).toString().padStart(2, '0');
+                    const day = fullDate.getDate().toString().padStart(2, '0');
+                    const deliverydate = `${year}-${month}-${day}`;
+                    const row = `
+                        <tr data-quantity="${order.quantity}">
+                            <td class="seq">${order.sequence}</td>
+                            <td>${order.customer_name}</td>
+                            <td>${order.volume * 1000}</td> 
+                            <td>${order.quantity}</td> 
+                            <td>${deliverydate}</td>                   
+                            <td id="others">
+                                <input type="button" value="Bottle Availability" class="options">
+                                <input type="button" value="Clipping" class="options">
+                                <input type="button" value="Washing" class="options">
+                                <input type="button" value="Rinsing" class="options">
+                                <input type="button" value="Filling" class="options">
+                                <input type="button" value="Capping" class="options">
+                                <input type="button" value="Batch Coding" class="options">
+                                <input type="button" value="QC" class="options">
+                                <input type="button" value="Packaging" class="options">
+                                <input type="button" value="Dispatch" class="options">
+                            </td>
+                            <td class="timer" data-timer-id="${order.sequence}">00:00:00</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            }
+
+            document.querySelectorAll('#others input').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.style.backgroundColor = "green";
+                });
+            });
         });
-    }
-
-    function updateOrderDisplay(orders) {
-        const tbody = document.querySelector('#order-table tbody');
-        tbody.innerHTML = '';
-        orders.forEach(order => {
-            const fullDate = new Date(order.delivery_date);
-            const year = fullDate.getFullYear();
-            const month = (fullDate.getMonth() + 1).toString().padStart(2, '0');
-            const day = fullDate.getDate().toString().padStart(2, '0');
-            const deliverydate = `${year}-${month}-${day}`;
-
-            const row = `
-                <tr>
-                    <td class="seq">${order.sequence}</td>
-                    <td>${order.customer_name}</td>
-                    <td>${order.volume * 1000}</td> 
-                    <td>${order.quantity}</td> 
-                    <td>${deliverydate}</td>                   
-                    <td>
-                        <select class="options" id="${order.sequence}">
-                            <option value="null" ${order.order_status === 'null' ? 'selected' : ''}>--Select--</option>
-                            <option value="Bottle Availability" ${order.order_status === 'Bottle Availability' ? 'selected' : '' }>Bottle Availability</option>
-                            <option value="Clipping" ${order.order_status === 'Clipping' ? 'selected' : '' }>Clipping</option>
-                            <option value="Washing" ${order.order_status === 'Washing' ? 'selected' : '' }>Washing</option>
-                            <option value="Rinsing" ${order.order_status === 'Rinsing' ? 'selected' : '' }>Rinsing</option>
-                            <option value="Filling" ${order.order_status === 'Filling' ? 'selected' : '' }>Filling</option>
-                            <option value="Capping" ${order.order_status === 'Capping' ? 'selected' : '' }>Capping</option>
-                            <option value="Batch Coding" ${order.order_status === 'Batch Coding' ? 'selected' : '' }>Batch Coding</option>
-                            <option value="QC" ${order.order_status === 'QC' ? 'selected' : '' }>QC</option>
-                            <option value="Packaging" ${order.order_status === 'Packaging' ? 'selected' : '' }>Packaging</option>
-                            <option value="Dispatch" ${order.order_status === 'Dispatch' ? 'selected' : '' }>Dispatch</option>
-                        </select>
-                    </td>
-                </tr>
-            `;
-            tbody.innerHTML += row;
-        });
-    }
-});
-
     </script>
 </body>
 </html>
